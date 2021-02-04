@@ -1,16 +1,12 @@
-import numpy as np
 import torch
-
 from torchvision import transforms
-from segmentation.dataloaders import custom_transforms as tr
+from .dataloaders import custom_transforms as tr
 
 from PIL import Image
-import datetime
+import numpy as np
 
 import fcn
 import skimage.io
-
-import cv2
 
 
 label_list = ['11', '12', '13', '14', '15', '17'] 
@@ -22,6 +18,13 @@ color_list = [[128, 0, 0],  # 11 빨
              [0, 0, 128],   # 15 파
              [64, 0, 0]]    # 17 갈
 
+def act_transfrom(img):
+    transform_val = transforms.Compose([
+            transforms.Resize(224),
+            transforms.ToTensor(),
+            transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
+        ])
+    return transform_val(img)
 
 def transform(sample):
     composed_transforms = transforms.Compose([
@@ -52,9 +55,8 @@ class MyModel:
         self.model = self.model.cuda()
         self.model.eval()
 
-        ## image load
-        ## src = Image.open('200311_Vid_1_000000.033.jpg').convert('RGB')
     def predict(self, src):
+        ## segmentation
         src_width, src_height = src.size
 
         sample = {'image': src, 'label': None}     
@@ -81,12 +83,13 @@ class MyModel:
                     '19_mtclip',
                     '17_mtcapplier',
                     '14_graspers'])
+        
+        
+        ## action 
         viz_no = fcn.utils.visualize_segmentation(lbl_pred=lbl_pred, lbl_true=None, img=imgs, n_class=10)
 
-        w_min = int(viz.shape[1] / 3 * 1)
-        w_max = int(viz.shape[1] / 3 * 2)
-
-
+        w_min = int(viz_no.shape[1] / 3 * 1)
+        w_max = int(viz_no.shape[1] / 3 * 2)
 
         result_img = viz_no[:,w_min:w_max,:].copy()
         result_img[result_img==127]=128
@@ -94,7 +97,9 @@ class MyModel:
         result_img[result_img==191]=192
 
         mask_list = []
-        ch_red, ch_green, ch_blue = result_img[:,:,0], result_img[:,:,1], result_img[:,:,2]
+        
+        ch_red, ch_green, ch_blue = result_img[:,:,0], result_img[:,:,1], result_img[:,:,2] # rgb channel
+        
         for idx, color in enumerate(color_list):
             base = result_img.copy()
 
@@ -103,10 +108,7 @@ class MyModel:
             base[:,:,:3][np.invert(mask)] = [0, 0, 0]
 
             if not (base == np.zeros_like(base)).all():
-                # crop mask
                 mask_sum = base.sum(2)
-                
-    
                 y, x = np.where(mask_sum > 0)
                 h, w = mask_sum.shape
 
@@ -115,19 +117,15 @@ class MyModel:
                 x_max = x.max()
                 x_min = x.min()
 
+                # margin for head of tools
                 y_max = h if y_max + 30 > h else y_max + 30
                 y_min = 0 if y_min - 30 < 0 else y_min - 30
                 x_max = w if x_max + 30 > w else x_max + 30
                 x_min = 0 if x_min - 30 < 0 else x_min - 30
 
-                base = imgs[y_min:y_max, x_min:x_max]
-
+                base = imgs[y_min:y_max, x_min:x_max] # crop mask
                 mask_list.append([base, label_list[idx]])
-                
-                
-                        
+                                 
         result = Image.fromarray(np.uint8(viz[:,w_max:,:])).resize((src_width, src_height))
         
         return result, mask_list
-
-

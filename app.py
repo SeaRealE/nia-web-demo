@@ -1,41 +1,26 @@
-from flask import Flask, request, render_template, url_for, redirect
-
 import sys
 import os
 
-import torch
-import torch.nn as nn
-import torchvision.models as models
-from PIL import Image
-from segmentation.model import *
+now_dir = os.getcwd()
+target_dir = '/model'
+cp_dir = '/_checkpoint/'
+sys.path.append(now_dir + target_dir)
 
+from flask import Flask, request, render_template, url_for, redirect
+
+import torch
+from model.model import *
+
+from PIL import Image
 import cv2
 import numpy as np
 
 
 # load model
-sys.path.append(os.getcwd()+'/segmentation/')
-model = MyModel('./segmentation/model.pth')
-
-model_action = models.resnet101()
-model_action.fc = nn.Sequential(nn.Linear(2048, 2048),
-                         nn.BatchNorm1d(num_features=2048),
-                         nn.ReLU(),
-                         nn.Linear(2048, 1024),
-                         nn.BatchNorm1d(num_features=1024),
-                         nn.ReLU(),
-                         nn.Linear(1024, 2))
+model = MyModel(now_dir + target_dir + '/model.pth')
+model_action = torch.load(now_dir + target_dir + '/action.pth')
 model_action = model_action.cuda()
 model_action.eval()
-model_action.load_state_dict(torch.load('./action/all.pth'))
-
-transform_val = transforms.Compose([
-        transforms.Resize(224),
-        transforms.CenterCrop(224),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    ])
-
 
 # load server
 HOST = '0.0.0.0'
@@ -48,11 +33,13 @@ def set_response_headers(r):
     r.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     r.headers['Pragma'] = 'no-cache'
     r.headers['Expires'] = '0'
+    r.headers['Cache-Control'] = 'public, max-age=0'
     return r
 
 # catch all route to 'login'
-@app.route("/", defaults={"path": ""})
-@app.route("/<path:path>")
+@app.route('/', defaults={'path': ''})
+@app.route('/<string:path>')
+@app.route('/<path:path>')
 def index(path):
     return redirect(url_for('login'))
 
@@ -86,8 +73,8 @@ def login_success():
 def image_predict():
     # print('----------- log) inference image')
     # remove 'result.png'
-    if os.path.isfile('./static/result.png'):
-        os.remove('./static/result.png')
+    if os.path.isfile(now_dir + '/static/result.png'):
+        os.remove(now_dir + '/static/result.png')
         
     if request.method == 'POST':
         # call 'inference' again
@@ -99,27 +86,21 @@ def image_predict():
         
         # inference
         img = Image.open(file).convert('RGB')
-        img.save('./static/input.png')
+        img.save(now_dir + '/static/input.png')
 
         res, crop_list =  model.predict(img)
         
         output_action_list = {}
-        
         for crop in crop_list:
             img_crop, label_crop = crop
 
-            model_action.load_state_dict(torch.load('./action/' + label_crop + '.pth'))
-
             with torch.no_grad():
-                output_action = model_action(transform_val(Image.fromarray(img_crop)).unsqueeze(0).cuda())
+                output_action = model_action(act_transfrom(Image.fromarray(img_crop)).unsqueeze(0).cuda())
                 _, pred_action = output_action.max(1)
 
                 output_action_list[label_crop] = pred_action.data.cpu().numpy()[0]
 
-        
-        
-        res.save('./static/result.png')
-        # Image.fromarray(res).save('./static/result.png')
+        res.save(now_dir + '/static/result.png')
 
         # return a path of 'input.png', 'result.png' 
         input_url = url_for('static', filename='input.png')
@@ -136,8 +117,6 @@ def video_page():
 # video-inference page 
 @app.route('/vid-inference', methods=['POST'])
 def video_predict():
-    global model_action
-    
     # print('----------- log) inference video')
     if request.method == 'POST':
         # call 'inference' again
@@ -145,11 +124,11 @@ def video_predict():
         if request.files['video'].filename == '':
             file = request.form['video_path']
             file_path = file
-        # get image from remote
+        # get video from remote
         else :
             file = request.files['video']
-            file.save('./static/input.mp4')
-            file_path = './static/input.mp4'
+            file.save(now_dir + '/static/input.mp4')
+            file_path = now_dir + '/static/input.mp4'
         
         # read video file
         cap = cv2.VideoCapture(file_path)
@@ -157,17 +136,13 @@ def video_predict():
         width  = cap.get(3) # float
         height = cap.get(4) # float
         frameNum = cap.get(5)
-        frameAllNum = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+        # frameAllNum = cap.get(cv2.CAP_PROP_FRAME_COUNT)
         
         fourcc = cv2.VideoWriter_fourcc('V','P','8','0')
-        out = cv2.VideoWriter('./static/output.webm', fourcc, 30, (int(width),int(height)))
-        
-        count = 0
+        out = cv2.VideoWriter(now_dir + '/static/output.webm', fourcc, frameNum, (int(width),int(height)))
         
         output_action_list = {'11':[0,0],'12':[0,0],'13':[0,0],
                                      '14':[0,0],'15':[0,0],'17':[0,0]}
-           
-        model_action.load_state_dict(torch.load('./action/all.pth'))
         
         while(cap.isOpened()):
             ret, frame = cap.read()
@@ -179,18 +154,13 @@ def video_predict():
                 for crop in crop_list:
                     img_crop, label_crop = crop
 
-                    # model_action.load_state_dict(torch.load('./action/' + label_crop + '.pth'))
-
                     with torch.no_grad():
-                        output_action = model_action(transform_val(Image.fromarray(img_crop)).unsqueeze(0).cuda())
+                        output_action = model_action(act_transfrom(Image.fromarray(img_crop)).unsqueeze(0).cuda())
                         _, pred_action = output_action.max(1)
 
                         act_idx = pred_action.data.cpu().numpy()[0]
                         output_action_list[label_crop][act_idx] += 1
-
-                # frameAllNum -= 1
-                # print('log) remain :',frameAllNum)
-            
+                        
                 out.write(np.array(res))
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
@@ -203,22 +173,19 @@ def video_predict():
         input_url = url_for('static', filename='input.mp4')
         output_url = url_for('static', filename='output.webm')
         
+        # result of action
         act_result = np.array(list(output_action_list.values()))
         act_result_close = act_result[:,0].tolist()
         act_result_open = act_result[:,1].tolist()
         
-        act_sum = act_result.sum()
-        act_result_close_per = (act_result[:,0] / act_sum * 100).tolist()
-        act_result_open_per = (act_result[:,1] / act_sum * 100).tolist()
+        # convert to % rate
+        # act_sum = act_result.sum()
+        # act_result_close_per = (act_result[:,0] / act_sum * 100).tolist()
+        # act_result_open_per = (act_result[:,1] / act_sum * 100).tolist()
         
-    
-    
     return render_template("vid-inference.html", input_video=input_url, output_video=output_url,
-                           act_result = [act_result_close, act_result_open, act_result_close_per, act_result_open_per] )
+                           act_result = [act_result_close, act_result_open]) #, act_result_close_per, act_result_open_per] )
 
-# @app.route('/test')
-# def test():  
-#     return render_template("test.html")
 
 # run server
 if __name__ == '__main__':
