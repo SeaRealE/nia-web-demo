@@ -1,0 +1,131 @@
+{% extends 'contents.html' %}
+
+{% block imageblock %}
+<form action="/video" method="POST" enctype="multipart/form-data" style="background:#EEEEEE; border-color:#EEEEEE;">
+    <input type="hidden" name="switch_page" value="0"/>
+    <input id="cT1" class="switch switch-round-default" type="checkbox" onclick='handleClick(this);' name="switch_page" value="1"> <label for="cT1"></label>
+</form>
+
+<div class="row" style="background:#ffffff;">
+<!--            -->       
+    <div class="col-sm-11 col-md-6">
+<!--            -->
+        <div class="file-upload">
+            <form action="/img-inference" method="POST" enctype="multipart/form-data" style="background:#ffffff; border-color:#ffffff;">
+            
+<!------------------------------------------------------------------------------------------->            
+            {% if output_img %}
+                <div class="image-upload-wrap" style="display: none;">
+                    <input class="file-upload-input" type='file' onchange="readURL(this);" accept="image/*" name='image'/>
+                    <!-- for clicking the 'inference' button when already inferenced -->
+                    <input value="./static/input.png" type='hidden' name='image_path'/>
+                    <div class="drag-text">
+                        <h3>Drag and drop or click</h3>
+                    </div>
+                </div>
+            
+                <div class="file-upload-content" style="display: inline;">
+                    <img class="file-upload-image" src="{{ input_img }}"/>
+                    <div class="image-title-wrap">
+                        <button type="button" onclick="removeUpload()" class="remove-image col-6 col-6-medium col-6-small"><span>Clear</span></button>
+                        <button type="submit" class="file-upload-btn col-6 col-6-medium col-6-small"><span>Inference</span></button>
+                    </div>
+                </div> 
+            {% else %}
+                <div class="image-upload-wrap">
+                    <input class="file-upload-input" type='file' onchange="readURL(this);" accept="image/*" name='image'/>
+                    <div class="drag-text">
+                        <h3>Drag and drop or click</h3>
+                    </div>
+                </div>
+            
+                <div class="file-upload-content">
+                    <img class="file-upload-image" src="#" alt="your image" />
+                    <div class="image-title-wrap">
+                        <button type="button" onclick="removeUpload()" class="remove-image col-6 col-6-medium col-6-small"><span>Clear</span></button>
+                        <button type="submit" class="file-upload-btn col-6 col-6-medium col-6-small"><span>Inference</span></button>
+                    </div>
+                </div> 
+            {% endif %}
+<!------------------------------------------------------------------------------------------->
+            
+            </form>
+        </div>
+<!--            -->
+    </div>
+    {% block result %}{% endblock %}
+<!--            -->       
+    {% if output_img %}
+    <div style="visibility:visible; width:60%; margin: auto; padding: 20px">
+        <table class="table-act">
+            <tr>
+              <th class="table-act">Name</th>
+              <th class="table-act">Status</th>
+            </tr>
+            {% if '11' in output_action_list %}
+            <tr>
+              <td>11_pforceps</td>
+              {% if output_action_list['11'] %}
+                  <td><button class="btn-act btn-open">open</button></td>
+              {% else %}
+                  <td><button class="btn-act btn-close">close</button></td>
+              {% endif %}  
+            </tr>
+            {% endif %}
+            {% if '12' in output_action_list %}
+            <tr>
+              <td>12_mbforceps</td>
+              {% if output_action_list['12'] %}
+                  <td><button class="btn-act btn-open">open</button></td>
+              {% else %}
+                  <td><button class="btn-act btn-close">close</button></td>
+              {% endif %}  
+            </tr>
+            {% endif %}
+            {% if '13' in output_action_list %}
+            <tr>
+              <td>13_mcscissors</td>
+              {% if output_action_list['13'] %}
+                  <td><button class="btn-act btn-open">open</button></td>
+              {% else %}
+                  <td><button class="btn-act btn-close">close</button></td>
+              {% endif %}  
+            </tr>
+            {% endif %}
+            {% if '14' in output_action_list %}
+            <tr>
+              <td>14_graspers</td>
+              {% if output_action_list['14'] %}
+                  <td><button class="btn-act btn-open">open</button></td>
+              {% else %}
+                  <td><button class="btn-act btn-close">close</button></td>
+              {% endif %}  
+            </tr>
+            {% endif %}
+            {% if '15' in output_action_list %}
+            <tr>
+              <td>15_pcapplier</td>
+              {% if output_action_list['15'] %}
+                  <td><button class="btn-act btn-open">open</button></td>
+              {% else %}
+                  <td><button class="btn-act btn-close">close</button></td>
+              {% endif %}  
+            </tr>
+            {% endif %}
+            {% if '17' in output_action_list %}
+            <tr>
+              <td>17_mtcapplier</td>
+              {% if output_action_list['17'] %}
+                  <td><button class="btn-act btn-open">open</button></td>
+              {% else %}
+                  <td><button class="btn-act btn-close">close</button></td>
+              {% endif %}  
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+    

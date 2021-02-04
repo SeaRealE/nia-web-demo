@@ -1,0 +1,19 @@
+@import url(https://fonts.googleapis.com/css?family=Raleway+Dots);
+
+.loading-page {
+    margin:0;padding:0;
+    width:100%;
+    height:100%;
+    position: fixed;
+    z-index:2;
+    background-color: rgba( 88, 88, 88, 0.5 );
+    color:#FFFFFF;
+    
+    display: flex;
+    align-items: center;
+}
+.center {
+  width: 105px;
+  margin: 0 auto;
+  margin-top: 50px;
+}

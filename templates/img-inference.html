@@ -1,0 +1,22 @@
+{% extends 'image.html' %}
+
+{% block result %}
+<div class="col-sm-11 col-md-6">
+    <div class="file-upload">
+        <form style="background:#ffffff; border-color:#ffffff;">
+
+            {% if output_img %}
+                <div class="file-output-content">
+                    <img class="file-output-image" src="{{ output_img }}">
+                </div>
+            {% else %}
+                <div class="image-output-wrap">
+                    <div class="drag-text">
+                        <h3>Output Image</h3>
+                    </div>
+                </div>
+            {% endif %}   
+        </form>
+    </div>
+</div>
+{% endblock %}

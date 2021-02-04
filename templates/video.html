@@ -1,0 +1,133 @@
+{% extends 'contents.html' %}
+
+{% block videoblock %}
+<form action="/image" method="POST" enctype="multipart/form-data" style="background:#EEEEEE; border-color:#EEEEEE;">
+    <input type="hidden" name="switch_page" value="0"/>
+    <input id="cT1" class="switch switch-round-default" type="checkbox" onclick='handleClick(this);' checked name="switch_page"  value="1"> <label for="cT1"></label>
+</form>
+
+<div class="row" style="background:#ffffff;">
+<!--            -->       
+    <div class="col-sm-11 col-md-6">
+<!--            -->
+        <div class="file-upload">
+            <form action="/vid-inference" method="POST" enctype="multipart/form-data" style="background:#ffffff; border-color:#ffffff;">
+            
+<!------------------------------------------------------------------------------------------->            
+            {% if output_video %}
+                <div class="image-upload-wrap" style="display: none;">
+                    <input class="file-upload-input" type='file' onchange="readURL(this);" accept=".mp4" name='video'/>
+                    <!-- for clicking the 'inference' button when already inferenced -->
+                    <input value="{{ input_video }}" type='hidden' name='video_path'/>
+                    <div class="drag-text">
+                        <h3>Drag and drop or click</h3>
+                    </div>
+                </div>
+            
+                <div class="file-upload-content" style="display: inline;">
+                    <video controls class="file-upload-image">
+                        <source src="{{ input_video }}" type='video/mp4'>
+                    </video>  
+                    
+                    <div class="image-title-wrap">
+                        <button type="button" onclick="removeUpload()" class="remove-image col-6 col-6-medium col-6-small"><span>Clear</span></button>
+                        <button type="submit" onclick="loading()" class="file-upload-btn col-6 col-6-medium col-6-small"><span>Inference</span></button>
+                    </div>
+                </div> 
+            {% else %}
+                <div class="image-upload-wrap">
+                    <input class="file-upload-input" type='file' onchange="readURL(this);" accept=".mp4" name='video'/>
+                    <div class="drag-text">
+                        <h3>Drag and drop or click</h3>
+                    </div>
+                </div>
+            
+                <div class="file-upload-content">
+                    <video controls class="file-upload-image">
+                        <source src="#" type='video/mp4'>
+                    </video>
+                    
+                    <div class="image-title-wrap">
+                        <button type="button" onclick="removeUpload()" class="remove-image col-6 col-6-medium col-6-small"><span>Clear</span></button>
+                        <button type="submit" onclick="loading()" class="file-upload-btn col-6 col-6-medium col-6-small"><span>Inference</span></button>
+                    </div>
+                </div> 
+            {% endif %}
+<!------------------------------------------------------------------------------------------->
+            
+            </form>
+        </div>
+<!--            -->
+    </div>
+    {% block result %}{% endblock %}
+<!--            -->       
+    {% if output_video %}
+    <div style="visibility:visible; width:90%; margin: auto;">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+        <canvas id="myChart_bar" width="100%" height="40%"></canvas>
+        <canvas id="myChart_line" width="100%" height="40%"></canvas>
+        <script>
+            var ctx_s = document.getElementById('myChart_bar').getContext('2d');
+            var data = {
+                // The type of chart we want to create
+                type: 'bar',
+                // The data for our dataset
+                data: {
+                    labels: ["11_pforceps", "12_mbforceps", "13_mcscissors", "14_graspers", "15_pcapplier", "17_mtcapplier"],
+                    datasets: [
+                        {
+                            label : "Close",
+                            backgroundColor: 'rgb(120, 99, 132)',
+                            borderColor: 'rgb(120, 99, 132)',
+                            fill:false,
+                            lineTension:0.1, 
+                            data: {{ act_result[0] }}
+                        },
+                        {
+                            label : "Open",
+                            backgroundColor: 'rgb(20, 99, 132)',
+                            borderColor: 'rgb(20, 99, 132)',
+                            fill:false,
+                            lineTension:0.1,
+                            data: {{ act_result[1] }}
+                        }
+                      ]
+                },
+                // Configuration options go here
+                options: {}
+            }
+            var chart = new Chart(ctx_s, data);
+            
+//             var ctx_s = document.getElementById('myChart_line').getContext('2d');
+//             var data = {
+//                 // The type of chart we want to create
+//                 type: 'line',
+//                 // The data for our dataset
+//                 data: {
+//                     labels: ["11_pforceps", "12_mbforceps", "13_mcscissors", "14_graspers", "15_pcapplier", "17_mtcapplier"],
+//                     datasets: [
+//                         {
+//                             label : "Close",
+//                             backgroundColor: 'rgba(120, 99, 132, 0.3)',
+//                             borderColor: 'rgb(120, 99, 132)',
+//                             data: {{ act_result[2] }}
+//                         },
+//                         {
+//                             label : "Open",
+//                             backgroundColor: 'rgba(20, 99, 132, 0.3)',
+//                             borderColor: 'rgb(20, 99, 132)',
+//                             data: {{ act_result[3] }}
+//                         }
+//                       ]
+//                 },
+//                 // Configuration options go here
+//                 options: {}
+//             }
+//             var chart = new Chart(ctx_s, data);
+        </script>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+    

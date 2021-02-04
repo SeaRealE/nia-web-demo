@@ -1,0 +1,26 @@
+{% extends 'video.html' %}
+
+{% block result %}
+<div class="col-sm-11 col-md-6">
+    <div class="file-upload">
+        <form style="background:#ffffff; border-color:#ffffff;">
+
+            {% if output_video %}
+                <div class="file-output-content">
+                    <video id="vid" class="file-output-image" width="100%" controls>
+                        <source src="{{ output_video }}" type="video/webm">
+                        Your browser does not support the video tag.
+                    </video>
+                    
+                </div>
+            {% else %}
+                <div class="image-output-wrap">
+                    <div class="drag-text">
+                        <h3>Output Video</h3>
+                    </div>
+                </div>
+            {% endif %}   
+        </form>
+    </div>
+</div>
+{% endblock %}

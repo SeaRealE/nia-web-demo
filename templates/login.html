@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block contents %}
+<div class="wrapper">
+    <form class="form-signin" action="/image" method="POST" enctype="multipart/form-data" style="background:#ffffff; border-color:#ffffff;">       
+      <h2 class="form-signin-heading">NIA Demo</h2>
+      <input type="password" class="form-control" name="password" placeholder="Password" required=""/>      
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>   
+    </form>
+  </div>
+{% endblock %}

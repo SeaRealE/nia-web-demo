@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.rawgit.com/Chalarangelo/mini.css/v3.0.1/dist/mini-nord.min.css">
+    
+    <script type="text/javascript" src="https://cdn.rawgit.com/Chalarangelo/bootstrap-extend/880420ae663f7c539971ded33411cdecffcc2134/js/bootstrap-extend.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.rawgit.com/Chalarangelo/bootstrap-extend/880420ae663f7c539971ded33411cdecffcc2134/css/bootstrap-extend.min.css"/>
+    
+    <link rel="stylesheet"  href="./static/upload.css">
+    <link rel="stylesheet"  href="./static/login.css">
+    <link rel="stylesheet"  href="./static/loading.css">
+    <link rel="icon" href="./static/favicon.ico">
+
+    <meta charset="UTF-8">
+    <title>Medical Image Segmentation - by KVL Lab </title>
+</head>
+
+<div class="common" style="text-align: center;">
+<body>
+    
+    <!------- loading page -------->
+    <div class="loading-page" style="display: none;">
+        <div class="center">
+          <canvas id="canvas" width="105" height="105">
+
+          </canvas>
+        <p>Loading, please wait.</p>
+        </div>
+    </div>
+    <script>
+        var cvs = document.getElementById("canvas");
+        ctx = cvs.getContext("2d");
+        sA = (Math.PI / 180) * 45;
+        sE = (Math.PI / 180) * 90;
+        ca = canvas.width;
+        ch = canvas.height;
+
+        function init(){     
+            setInterval(function(){
+
+               ctx.clearRect(0, 0, ca, ch);
+               ctx.lineWidth = 15;
+
+               ctx.beginPath();
+               ctx.strokeStyle = "#dddddd";     
+               ctx.shadowColor = "#888888";
+               ctx.shadowOffsetX = 2;
+               ctx.shadowOffsetY = 2;
+               ctx.shadowBlur = 5;
+               ctx.arc(50, 50, 25, 0, 360, false);
+               ctx.stroke();
+               ctx.closePath();
+
+               sE += 0.05; 
+               sA += 0.05;
+
+               ctx.beginPath();
+               ctx.strokeStyle = "#aaaaaa";
+               ctx.arc(50, 50, 25, sA, sE, false);
+               ctx.stroke();
+               ctx.closePath();   
+
+            }, 6);
+
+        }
+        init();
+    </script>
+    <!--------------->
+    
+    <!------- contents -------->
+    
+    <div style="position: relative; z-index:1;">
+<header class="sticky row" style="background: #12171a;">
+    <div class="row" style="width:100%;">
+        <div class="col-sm-3 col-md-3 col-md-offset-1">
+            <a href="./" class="logo" style="background: #12171a; color: #ffffff;">NIA</a>
+        </div>
+        <div class="col-sm-4 col-md-4">
+            <a href="./" class="button" style="background: #12171a; color: #ffffff;">App</a>
+            <a id='link_KVL' href="javascript:void(0);" onclick="handler_KVL();" class="button" style="background: #12171a; color: #ffffff;">KVL Lab</a>
+        </div>
+    </div>
+</header>
+    
+{% block contents %}{% endblock %}
+
+<div class="col-sm col-sm-offset-2 col-md-7 col-md-offset-3 col-lg-5 col-lg-offset-4 row" style="text-align: center;">
+  <div class="card fluid" style=" width: 80%; background:#D9D9D9;">
+        <ul style="text-align: left;">
+          <small>Master Student - Jaehyeop Choi. Haejin Lee.</small>
+          <small></small>
+        </ul>
+  </div>
+</div>
+
+<div class="container" style="height: 8rem; position: relative;">
+  <span class="toast doc" style="position: absolute;">
+    Made by seareale | &copy; 2020.KVL Lab. | <a id='link_KNU' href="javascript:void(0);" onclick="handler_KNU();">KNU</a>
+  </span>
+</div>
+        
+<script>
+    var handler_KVL = function() {
+        window.top.location.href = "http://vl.knu.ac.kr"; 
+    }
+    var handler_KNU = function() {
+        window.top.location.href = "http://knu.ac.kr"; 
+    }
+</script>
+
+<script src = "./static/index.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//d3js.org/d3.v5.min.js"></script>
+
+<script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>         
+</div>
+    <!--------------->
+</body>
+        
+</div>
+
+</html>
