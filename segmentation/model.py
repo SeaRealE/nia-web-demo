@@ -2,7 +2,10 @@ import numpy as np
 import torch
 
 from torchvision import transforms
-from model.dataloaders import custom_transforms as tr
+
+import sys
+sys.path.append(os.getcwd())
+from dataloaders import custom_transforms as tr
 
 from PIL import Image
 import datetime
