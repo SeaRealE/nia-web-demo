@@ -56,7 +56,7 @@ def login_success():
         return render_template("img-inference.html")
     
     # password validation
-    userfile = open('PASSWORD', 'r')
+    userfile = open('PASSWD', 'r')
     user_result = userfile.read()
     if request.method == 'POST':
         user_pw = request.form['password']
