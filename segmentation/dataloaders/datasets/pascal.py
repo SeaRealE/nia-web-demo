@@ -4,13 +4,13 @@ from PIL import Image
 import numpy as np
 from torch.utils.data import Dataset
 from torchvision import transforms
-from model.dataloaders import custom_transforms as tr
+from segmentation.dataloaders import custom_transforms as tr
 
 class VOCSegmentation(Dataset):
     """
     PascalVoc dataset
     """
-    myFile = open('./model/output/class_names.txt','r')
+    myFile = open('./segmentation/output/class_names.txt','r')
     NUM_CLASSES = myFile.read().count("\n")+1
     
     def __init__(self,

@@ -14,8 +14,7 @@ import numpy as np
 
 
 # load model
-sys.path.append(os.getcwd()+'/model/')
-model = MyModel('./model/model.pth')
+model = MyModel('./segmentation/model.pth')
 
 model_action = models.resnet101()
 model_action.fc = nn.Sequential(nn.Linear(2048, 2048),
