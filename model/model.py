@@ -20,7 +20,7 @@ color_list = [[128, 0, 0],  # 11 빨
 
 def act_transfrom(img):
     transform_val = transforms.Compose([
-            transforms.Resize((input_size, input_size)),
+            transforms.Resize((224, 224)),
             transforms.ToTensor(),
             transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
           ])
