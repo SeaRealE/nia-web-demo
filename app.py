@@ -61,7 +61,7 @@ def login_success():
     if request.method == 'POST':
         user_pw = request.form['password']
     
-        if user_pw == user_result:
+        if user_pw.strip() == user_result.strip():
             # print('----------- log) login success')
             return render_template("img-inference.html")
         else:
