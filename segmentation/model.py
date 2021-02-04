@@ -2,11 +2,7 @@ import numpy as np
 import torch
 
 from torchvision import transforms
-
-import sys
-import os
-sys.path.append(os.getcwd())
-from dataloaders import custom_transforms as tr
+from segmentation.dataloaders import custom_transforms as tr
 
 from PIL import Image
 import datetime
