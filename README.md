@@ -1,1 +1,1 @@
-# pytorch-web-demo
+# nia-web-demo
