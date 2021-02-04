@@ -28,7 +28,7 @@ $ sudo ufw allow 8893
 
 ## Run
 ```bash
-$ ./run.sh
+$ ./run_nia_demo.sh
 ```
 , or
 ```bash
