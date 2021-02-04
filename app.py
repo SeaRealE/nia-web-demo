@@ -14,6 +14,7 @@ import numpy as np
 
 
 # load model
+sys.path.append(os.getcwd()+'/segmentation/')
 model = MyModel('./segmentation/model.pth')
 
 model_action = models.resnet101()
