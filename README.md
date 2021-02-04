@@ -11,6 +11,14 @@ Surgical image segmentation and action classification using PyTorch and Flask
 ---
 
 ## Install 
+Using ```Imbalanced Dataset Sampler``` from [ufoym/imbalanced-dataset-sampler](https://github.com/ufoym/imbalanced-dataset-sampler)
+```bash
+$ git clone https://github.com/ufoym/imbalanced-dataset-sampler.git
+$ cd imbalanced-dataset-sampler
+$ python setup.py install
+$ pip install .
+$ cd ..
+```
 ```bash
 $ git clone https://github.com/SeaRealE/nia-web-demo.git ./nia-web-demo
 $ cd nia-web-demo
