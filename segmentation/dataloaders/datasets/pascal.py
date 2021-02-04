@@ -10,7 +10,7 @@ class VOCSegmentation(Dataset):
     """
     PascalVoc dataset
     """
-    myFile = open('./segmentation/output/class_names.txt','r')
+    myFile = open('./segmentation/class_names.txt','r')
     NUM_CLASSES = myFile.read().count("\n")+1
     
     def __init__(self,

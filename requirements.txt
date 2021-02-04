@@ -1,6 +1,6 @@
 torch==1.6.0
 torchvision==0.7.0
 fcn==6.4.17
-opencv-python==4.4.0.46
-Flask==1.1.2
-Werkzeug==0.15.4
+opencv-python
+Flask
+Werkzeug
