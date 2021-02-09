@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from modeling.sync_batchnorm.batchnorm import SynchronizedBatchNorm2d
 from modeling.aspp import build_aspp
 from modeling.decoder import build_decoder
-from modeling.backbone import build_backbone
+from modeling import xception
 
 class DeepLab(nn.Module):
     def __init__(self, backbone='resnet', output_stride=16, num_classes=15,
@@ -18,7 +18,7 @@ class DeepLab(nn.Module):
         else:
             BatchNorm = nn.BatchNorm2d
 
-        self.backbone = build_backbone(backbone, output_stride, BatchNorm)
+        self.backbone = xception.AlignedXception(output_stride, BatchNorm)
         self.aspp = build_aspp(backbone, output_stride, BatchNorm)
         self.decoder = build_decoder(num_classes, backbone, BatchNorm)
 

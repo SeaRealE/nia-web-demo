@@ -1,6 +1,7 @@
 import torch
 from torchvision import transforms
-from .dataloaders import custom_transforms as tr
+import utils.custom_transforms as tr
+from utils.get_cmap import label_colormap as cmap
 
 from PIL import Image
 import numpy as np
@@ -10,20 +11,23 @@ import skimage.io
 
 
 label_list = ['11', '12', '13', '14', '15', '17'] 
-
-color_list = [[128, 0, 0],  # 11 빨
-             [0, 128, 0],   # 12 초
-             [128, 128, 0], # 13 노
-             [192, 0, 0],   # 14 진빨
-             [0, 0, 128],   # 15 파
-             [64, 0, 0]]    # 17 갈
+label_names = ['_background_',
+        '11_pforceps',
+        '12_mbforceps',
+        '13_mcscissors',
+        '18_pclip',
+        '20_sxir',
+        '15_pcapplier',
+        '17_mtcapplier',
+        '19_mtclip',
+        '14_graspers']
 
 def act_transfrom(img):
     transform_val = transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
             transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
-          ])
+        ])
     return transform_val(img)
 
 def transform(sample):
@@ -58,6 +62,8 @@ class MyModel:
     def predict(self, src):
         ## segmentation
         src_width, src_height = src.size
+        
+        color_list = (cmap(len(label_names)) * 255).astype(np.uint8)[[1,2,3,9,6,7]]
 
         sample = {'image': src, 'label': None}     
         sample = transform(sample)
@@ -69,19 +75,22 @@ class MyModel:
         imgs = image.data.cpu()[0]
         lbl_pred = output.data.max(1)[1].cpu().numpy()[:, :, :][0]
         lbl_true = target.data.cpu() #cpu()
-
+        
+        lbl_pred[lbl_pred==4] = 0
+        lbl_pred[lbl_pred==8] = 0
+        
         imgs, lbl_true = untransform(imgs, lbl_true)
         viz = fcn.utils.visualize_segmentation(
             lbl_pred=lbl_pred, lbl_true=None, img=imgs, n_class=10,
-            label_names = [' ',
+            label_names = ['',
                     '11_pforceps',
                     '12_mbforceps',
                     '13_mcscissors',
-                    '15_pcapplier',
-                    '18_pclip',
+                    '',
                     '20_sxir',
-                    '19_mtclip',
+                    '15_pcapplier',
                     '17_mtcapplier',
+                    '',
                     '14_graspers'])
         
         
@@ -118,10 +127,10 @@ class MyModel:
                 x_min = x.min()
 
                 # margin for head of tools
-                y_max = h if y_max + 30 > h else y_max + 30
-                y_min = 0 if y_min - 30 < 0 else y_min - 30
-                x_max = w if x_max + 30 > w else x_max + 30
-                x_min = 0 if x_min - 30 < 0 else x_min - 30
+                y_max = h if y_max + 50 > h else y_max + 50
+                y_min = 0 if y_min - 50 < 0 else y_min - 50
+                x_max = w if x_max + 50 > w else x_max + 50
+                x_min = 0 if x_min - 50 < 0 else x_min - 50
 
                 base = imgs[y_min:y_max, x_min:x_max] # crop mask
                 mask_list.append([base, label_list[idx]])

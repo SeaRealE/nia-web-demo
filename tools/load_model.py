@@ -38,7 +38,7 @@ import torchvision.models as models
 import torch.nn as nn
 
 try:
-    model = models.resnet152()
+    model = models.resnext50_32x4d()
     model.fc = nn.Sequential(nn.Linear(2048, 2048),
                      nn.BatchNorm1d(num_features=2048),
                      nn.ReLU(),

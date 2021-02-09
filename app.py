@@ -61,7 +61,7 @@ def login_success():
     if request.method == 'POST':
         user_pw = request.form['password']
     
-        if user_pw.strip() == user_result.strip():
+        if user_pw == user_result:
             # print('----------- log) login success')
             return render_template("img-inference.html")
         else:
@@ -118,6 +118,10 @@ def video_page():
 @app.route('/vid-inference', methods=['POST'])
 def video_predict():
     # print('----------- log) inference video')
+        # remove 'output.webm'
+    if os.path.isfile(now_dir + '/static/output.webm'):
+        os.remove(now_dir + '/static/output.webm')
+    
     if request.method == 'POST':
         # call 'inference' again
         file_path = ''
@@ -138,7 +142,7 @@ def video_predict():
         frameNum = cap.get(5)
         # frameAllNum = cap.get(cv2.CAP_PROP_FRAME_COUNT)
         
-        fourcc = cv2.VideoWriter_fourcc('V','P','8','0')
+        fourcc = cv2.VideoWriter_fourcc('V','P','9','0')
         out = cv2.VideoWriter(now_dir + '/static/output.webm', fourcc, frameNum, (int(width),int(height)))
         
         output_action_list = {'11':[0,0],'12':[0,0],'13':[0,0],
